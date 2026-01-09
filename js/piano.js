@@ -407,21 +407,30 @@ class PianoKeyboard {
     }
 
     /**
-     * Center keyboard on specific notes/octaves with smooth scrolling animation
-     * Does NOT re-render - just scrolls to center the requested octave range
-     * @param {number} minOctave - Minimum octave of the range to center
-     * @param {number} maxOctave - Maximum octave of the range to center
-     * @param {boolean} animate - Whether to animate the scroll (default: true)
+     * Center keyboard on specific note or octave range
+     * @param {string|number} target - Center note (e.g. "C4") OR minOctave (number)
+     * @param {number|boolean} arg2 - maxOctave (if target is number) OR animate (boolean)
+     * @param {boolean} arg3 - animate (if target is number)
      */
-    centerOn(minOctave, maxOctave, animate = true) {
+    centerOn(target, arg2, arg3) {
         const container = this.container;
+        let centerNote;
+        let animate = true;
 
-        // Calculate the center octave
-        const centerOctave = (minOctave + maxOctave) / 2;
+        if (typeof target === 'number') {
+            // Legacy: centerOn(minOctave, maxOctave, animate)
+            const minOctave = target;
+            const maxOctave = arg2;
+            animate = arg3 !== undefined ? arg3 : true;
 
-        // Find a key near the center octave to scroll to
-        // Use D as it's roughly in the middle of an octave's white keys
-        const centerNote = `D${Math.round(centerOctave)}`;
+            const centerOctave = (minOctave + maxOctave) / 2;
+            centerNote = `D${Math.round(centerOctave)}`;
+        } else {
+            // New: centerOn(noteStr, animate)
+            centerNote = target;
+            animate = arg2 !== undefined ? arg2 : true;
+        }
+
         const centerKey = this.keys.get(centerNote);
 
         if (!centerKey) {
@@ -455,7 +464,7 @@ class PianoKeyboard {
      * Used for initial positioning
      */
     scrollToCenter() {
-        this.centerOn(3, 5, false);
+        this.centerOn("D4", false);
     }
 }
 

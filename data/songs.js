@@ -917,3 +917,33 @@ export function getSongOctaveRange(song) {
 
   return { minOctave, maxOctave };
 }
+
+/**
+ * Get the center note of the song's range (for visual centering)
+ * @param {Object} song
+ * @returns {string} noteStr (e.g. "F4")
+ */
+export function getSongRangeCenter(song) {
+  let minVal = Infinity;
+  let maxVal = -Infinity;
+  const WHITE_KEYS = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+
+  for (const item of song.sequence) {
+    if (item.note === 'rest') continue;
+    const { letter, octave } = parseNote(item.note);
+    const noteIndex = WHITE_KEYS.indexOf(letter.replace('#', '')); // Ignore sharps for rough centering
+    const absValue = octave * 7 + noteIndex;
+
+    if (absValue < minVal) minVal = absValue;
+    if (absValue > maxVal) maxVal = absValue;
+  }
+
+  if (minVal === Infinity) return "D4"; // Default fallback
+
+  const centerVal = (minVal + maxVal) / 2;
+  const centerOctave = Math.floor(centerVal / 7);
+  const centerNoteIndex = Math.round(centerVal % 7);
+  const centerNote = WHITE_KEYS[centerNoteIndex];
+
+  return `${centerNote}${centerOctave}`;
+}

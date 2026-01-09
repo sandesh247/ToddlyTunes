@@ -7,7 +7,7 @@ import { settings } from './settings.js';
 import { audioEngine } from './audio.js';
 import { PianoKeyboard } from './piano.js';
 import { MusicBook } from './music-book.js';
-import { getSongById, getSongOctaveRange } from '../data/songs.js';
+import { getSongById, getSongOctaveRange, getSongRangeCenter } from '../data/songs.js';
 
 class GameController {
     constructor() {
@@ -62,9 +62,9 @@ class GameController {
         // Load into music book
         this.musicBook.loadSong(song);
 
-        // Calculate octave range and render piano
-        const { minOctave, maxOctave } = getSongOctaveRange(song);
-        this.piano.centerOn(minOctave, maxOctave);
+        // Calculate visual center and scroll piano
+        const centerNote = getSongRangeCenter(song);
+        this.piano.centerOn(centerNote);
 
         // Update highlights
         this.updateHighlights();
