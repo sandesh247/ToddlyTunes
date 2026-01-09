@@ -298,6 +298,19 @@
 }
 
 /* === Responsive === */
+
+/* Tablets */
+@media (max-width: 1024px) {
+    .music-book {
+        max-width: 100%;
+    }
+
+    .music-book-content {
+        padding: var(--space-3) var(--space-4);
+    }
+}
+
+/* Small tablets / Large phones */
 @media (max-width: 768px) {
     .music-book {
         border-radius: var(--radius-xl);
@@ -322,6 +335,7 @@
     }
 }
 
+/* Small phones */
 @media (max-width: 480px) {
     .music-book-header {
         padding: var(--space-2) var(--space-3);
@@ -331,12 +345,68 @@
         font-size: var(--font-size-lg);
     }
 
+    .music-book-content {
+        padding: var(--space-2) var(--space-3);
+    }
+
     .note-indicator {
         font-size: var(--font-size-lg);
         padding: var(--space-1);
+        min-width: 1.75rem;
     }
 
     .lyric-text {
         font-size: var(--font-size-md);
+    }
+
+    .sheet-music {
+        gap: var(--space-3);
+    }
+
+    .completion-emoji {
+        font-size: 3rem;
+    }
+
+    .completion-text {
+        font-size: var(--font-size-xl);
+    }
+}
+
+/* Very small phones */
+@media (max-width: 360px) {
+    .music-book {
+        border-radius: var(--radius-lg);
+    }
+
+    .music-book-header {
+        padding: var(--space-1) var(--space-2);
+    }
+
+    .music-book-title {
+        font-size: var(--font-size-md);
+    }
+
+    .note-indicator {
+        font-size: var(--font-size-md);
+        min-width: 1.5rem;
+    }
+
+    .lyric-text {
+        font-size: var(--font-size-sm);
+    }
+}
+
+/* Landscape mode on phones */
+@media (max-height: 500px) and (orientation: landscape) {
+    .music-book-content {
+        padding: var(--space-1) var(--space-2);
+    }
+
+    .sheet-music {
+        gap: var(--space-2);
+    }
+
+    .completion-emoji {
+        font-size: 2rem;
     }
 }

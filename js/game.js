@@ -162,8 +162,8 @@ class GameController {
         // Clear piano highlights
         this.piano.clearHighlights();
 
-        // Play celebration sound
-        audioEngine.playCelebration();
+        // Brief delay before celebration to let the final note ring
+        setTimeout(() => audioEngine.playCelebration(), 500);
 
         // Show completion in music book
         this.musicBook.showCompletion();

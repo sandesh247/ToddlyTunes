@@ -278,6 +278,24 @@ body {
 }
 
 /* === Responsive === */
+
+/* Tablets */
+@media (max-width: 1024px) {
+    .app-header {
+        padding: var(--space-2) var(--space-3);
+        height: var(--header-height);
+    }
+
+    .music-book-section {
+        padding: var(--space-3);
+    }
+
+    .piano-section {
+        padding: var(--space-3) var(--space-2) var(--space-4);
+    }
+}
+
+/* Small tablets / Large phones */
 @media (max-width: 768px) {
     .app-header {
         padding: var(--space-2) var(--space-3);
@@ -298,11 +316,80 @@ body {
     .piano-section {
         padding: var(--space-2) var(--space-2) var(--space-4);
     }
+
+    .icon-btn {
+        width: 40px;
+        height: 40px;
+        font-size: var(--font-size-lg);
+    }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+    .app-header {
+        padding: var(--space-1) var(--space-2);
+        gap: var(--space-1);
+    }
+
+    .app-logo-text {
+        font-size: var(--font-size-md);
+    }
+
+    .song-title {
+        font-size: var(--font-size-sm);
+        padding: 0 var(--space-1);
+    }
+
+    .icon-btn {
+        width: 36px;
+        height: 36px;
+        font-size: var(--font-size-md);
+    }
+
+    .header-actions {
+        gap: var(--space-1);
+    }
+
+    .music-book-section {
+        padding: var(--space-1);
+    }
+
+    .piano-section {
+        padding: var(--space-1) var(--space-1) var(--space-2);
+    }
+}
+
+/* Very small phones */
+@media (max-width: 360px) {
+    .app-logo-text {
+        display: none;
+        /* Hide logo text to save space */
+    }
+
+    .song-title {
+        font-size: var(--font-size-sm);
+    }
+}
+
+/* Landscape mode on phones */
+@media (max-height: 500px) and (orientation: landscape) {
+    .app-header {
+        height: 40px;
+        padding: var(--space-1) var(--space-2);
+    }
+
+    .music-book-section {
+        padding: var(--space-1);
+    }
+
+    .piano-section {
+        padding: var(--space-1);
+    }
 }
 
 @media (max-height: 600px) {
     .app-header {
-        height: 50px;
+        height: var(--header-height, 50px);
     }
 
     .music-book-section {

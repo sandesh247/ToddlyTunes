@@ -258,6 +258,12 @@
 }
 
 /* === Responsive === */
+@media (max-width: 1024px) {
+    .piano-keyboard {
+        padding: var(--space-2) var(--space-3);
+    }
+}
+
 @media (max-width: 768px) {
     .piano-keyboard {
         padding: var(--space-2) var(--space-3) var(--space-3);
@@ -271,10 +277,29 @@
     .piano-key.black .key-label {
         font-size: var(--font-size-xs);
     }
+
+    .piano-container {
+        padding: var(--space-1);
+    }
 }
 
 @media (max-width: 480px) {
+    .piano-keyboard {
+        padding: var(--space-2);
+        border-radius: var(--radius-md);
+    }
+
     .key-label {
         font-size: var(--font-size-sm);
+    }
+
+    .piano-key.black .key-label {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 360px) {
+    .key-label {
+        font-size: var(--font-size-xs);
     }
 }

@@ -265,17 +265,32 @@ class AudioEngine {
     }
 
     /**
-     * Play a completion celebration sound
+     * Play a gentle celebration sound for song completion
      */
     playCelebration() {
         if (!this.initialized) return;
 
-        const notes = ['C4', 'E4', 'G4', 'C5', 'E5', 'G5', 'C6'];
+        // A simple ascending arpeggio at reduced volume
+        const notes = ['C5', 'E5', 'G5', 'C6'];
+        const celebrationGain = 0.3;
+
         notes.forEach((note, i) => {
             setTimeout(() => {
+                // Temporarily reduce master volume for softer sound
+                const originalGain = this.masterGain.gain.value;
+                this.masterGain.gain.setValueAtTime(celebrationGain, this.audioContext.currentTime);
+
                 const stop = this.playNote(note);
-                setTimeout(stop, 300);
-            }, i * 80);
+                setTimeout(() => {
+                    stop();
+                    // Restore original volume after note ends
+                    if (i === notes.length - 1) {
+                        setTimeout(() => {
+                            this.masterGain.gain.setValueAtTime(originalGain, this.audioContext.currentTime);
+                        }, 200);
+                    }
+                }, 250);
+            }, i * 150);
         });
     }
 }
