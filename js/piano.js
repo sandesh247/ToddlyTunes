@@ -325,7 +325,14 @@ class PianoKeyboard {
         const noteHighlights = new Map(); // noteStr -> best index
         const lookahead = settings.get('lookaheadSteps');
 
-        notes.slice(0, lookahead + 1).forEach((noteStr, index) => {
+        // If lookahead is 0, don't highlight anything (free play mode)
+        if (lookahead === 0) {
+            this.currentHighlights = [];
+            this.nextExpectedNote = notes.length > 0 ? notes[0] : null;
+            return;
+        }
+
+        notes.slice(0, lookahead).forEach((noteStr, index) => {
             if (!noteStr) return;
             // Only update if this note doesn't have a highlight yet,
             // or if the current index is better (lower) than what we have
