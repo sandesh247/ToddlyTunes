@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description"
+    content="ToddlyTunes - A fun piano tutor for toddlers to learn simple songs with visual guidance">
+  <meta name="theme-color" content="#7C4DFF">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <title>ToddlyTunes - Piano Tutor for Toddlers</title>
+
+  <!-- Google Fonts: Nunito -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css?v=3">
+  <link rel="stylesheet" href="css/main.css?v=3">
+  <link rel="stylesheet" href="css/piano.css?v=3">
+  <link rel="stylesheet" href="css/music-book.css?v=3">
+  <link rel="stylesheet" href="css/modals.css?v=3">
+</head>
+
+<body>
+  <div class="app" id="app">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="app-logo">
+        <span class="app-logo-icon">🎹</span>
+        <span class="app-logo-text">ToddlyTunes</span>
+      </div>
+
+      <h1 class="song-title" id="songTitle">Select a Song</h1>
+
+      <div class="header-actions">
+        <button class="icon-btn" id="songSelectBtn" title="Choose Song" aria-label="Choose Song">
+          🎵
+        </button>
+        <button class="icon-btn settings-btn" id="settingsBtn" title="Settings (hold 3 seconds)" aria-label="Settings">
+          ⚙️
+          <svg class="progress-ring" viewBox="0 0 44 44">
+            <circle class="progress-ring-bg" cx="22" cy="22" r="20" />
+            <circle class="progress-ring-fill" cx="22" cy="22" r="20" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Music Book Section -->
+      <section class="music-book-section" aria-label="Sheet Music">
+        <div class="music-book" id="musicBook">
+          <header class="music-book-header">
+            <h2 class="music-book-title" id="musicBookTitle">🎶 Let's Play! 🎶</h2>
+          </header>
+          <div class="music-book-content" id="sheetMusic">
+            <!-- Sheet music content will be rendered here -->
+            <div class="sheet-music" id="sheetMusicContent">
+              <p style="text-align: center; color: var(--color-text-secondary); padding: 2rem;">
+                Tap 🎵 above to choose a song!
+              </p>
+            </div>
+          </div>
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Piano Section -->
+      <section class="piano-section" aria-label="Piano Keyboard">
+        <div class="piano-container" id="pianoContainer">
+          <div class="piano-keyboard" id="pianoKeyboard">
+            <!-- Piano keys will be rendered here -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Song Selector Modal -->
+    <div class="modal-backdrop" id="songModal">
+      <div class="modal" role="dialog" aria-labelledby="songModalTitle">
+        <header class="modal-header">
+          <h2 class="modal-title" id="songModalTitle">🎵 Choose a Song</h2>
+          <button class="modal-close" id="songModalClose" aria-label="Close">✕</button>
+        </header>
+        <div class="modal-body">
+          <div class="song-grid" id="songGrid">
+            <!-- Song cards will be rendered here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-backdrop" id="settingsModal">
+      <div class="modal" role="dialog" aria-labelledby="settingsModalTitle">
+        <header class="modal-header">
+          <h2 class="modal-title" id="settingsModalTitle">⚙️ Settings</h2>
+          <button class="modal-close" id="settingsModalClose" aria-label="Close">✕</button>
+        </header>
+        <div class="modal-body">
+          <div class="parental-lock-hint">
+            <span class="parental-lock-hint-icon">🔒</span>
+            <span class="parental-lock-hint-text">Settings are protected by a 3-second hold to prevent little ones from
+              changing things!</span>
+          </div>
+
+          <!-- Lookahead Steps -->
+          <div class="settings-group">
+            <label class="settings-label">Look-Ahead Notes</label>
+            <p class="settings-description">How many upcoming notes to highlight</p>
+            <div class="settings-range">
+              <input type="range" id="lookaheadSteps" min="0" max="5" value="3">
+              <span class="range-value" id="lookaheadValue">3</span>
+            </div>
+          </div>
+
+          <!-- Touch Tolerance -->
+          <div class="settings-group">
+            <label class="settings-label">Touch Sensitivity</label>
+            <p class="settings-description">How forgiving the piano keys are to imprecise touches</p>
+            <div class="settings-range">
+              <input type="range" id="touchTolerance" min="0" max="100" value="30">
+              <span class="range-value" id="toleranceValue">30%</span>
+            </div>
+          </div>
+
+          <!-- Show Note Labels -->
+          <div class="settings-group">
+            <div class="toggle-container">
+              <div>
+                <label class="settings-label">Show Note Labels</label>
+                <p class="settings-description">Display letter names on piano keys</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="showNoteLabels" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Sound Theme -->
+          <div class="settings-group">
+            <label class="settings-label">Sound Theme</label>
+            <p class="settings-description">Choose your piano sound</p>
+            <div class="theme-selector" id="themeSelector">
+              <button class="theme-option selected" data-theme="piano">
+                <span class="theme-option-icon">🎹</span>
+                <span class="theme-option-label">Piano</span>
+              </button>
+              <button class="theme-option" data-theme="reverb">
+                <span class="theme-option-icon">🌊</span>
+                <span class="theme-option-label">Dreamy</span>
+              </button>
+              <button class="theme-option" data-theme="xylophone">
+                <span class="theme-option-icon">🔔</span>
+                <span class="theme-option-label">Xylophone</span>
+              </button>
+              <button class="theme-option" data-theme="music-box">
+                <span class="theme-option-icon">🎁</span>
+                <span class="theme-option-label">Music Box</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script type="module" src="js/app.js"></script>
+</body>
+
+</html>

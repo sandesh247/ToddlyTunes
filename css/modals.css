@@ -1,0 +1,404 @@
+/* ========================================
+   ToddlyTunes - Modals Styles
+   ======================================== */
+
+/* === Modal Backdrop === */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: var(--color-overlay);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-modal-backdrop);
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-normal);
+    padding: var(--space-4);
+}
+
+.modal-backdrop.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* === Modal Container === */
+.modal {
+    background: var(--color-surface);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-xl);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.9) translateY(20px);
+    transition: transform var(--transition-normal);
+}
+
+.modal-backdrop.open .modal {
+    transform: scale(1) translateY(0);
+}
+
+/* Modal Header */
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: var(--color-text-light);
+}
+
+.modal-title {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    margin: 0;
+}
+
+.modal-close {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-xl);
+    transition: all var(--transition-normal);
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+/* Modal Body */
+.modal-body {
+    flex: 1;
+    padding: var(--space-4);
+    overflow-y: auto;
+}
+
+/* === Settings Modal === */
+.settings-group {
+    margin-bottom: var(--space-6);
+}
+
+.settings-group:last-child {
+    margin-bottom: 0;
+}
+
+.settings-label {
+    display: block;
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.settings-description {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-3);
+}
+
+/* Range Slider */
+.settings-range {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.settings-range input[type="range"] {
+    flex: 1;
+    height: 8px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #E0E0E0;
+    border-radius: var(--radius-full);
+    outline: none;
+}
+
+.settings-range input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-fast);
+}
+
+.settings-range input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+.settings-range input[type="range"]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: var(--shadow-md);
+}
+
+.range-value {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    min-width: 3rem;
+    text-align: center;
+}
+
+/* Toggle Switch */
+.toggle-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.toggle-switch {
+    position: relative;
+    width: 56px;
+    height: 32px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #E0E0E0;
+    border-radius: var(--radius-full);
+    transition: var(--transition-normal);
+}
+
+.toggle-slider::before {
+    position: absolute;
+    content: "";
+    height: 24px;
+    width: 24px;
+    left: 4px;
+    bottom: 4px;
+    background: white;
+    border-radius: 50%;
+    transition: var(--transition-normal);
+    box-shadow: var(--shadow-sm);
+}
+
+.toggle-switch input:checked+.toggle-slider {
+    background: var(--color-primary);
+}
+
+.toggle-switch input:checked+.toggle-slider::before {
+    transform: translateX(24px);
+}
+
+/* Sound Theme Selector */
+.theme-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: var(--space-3);
+}
+
+.theme-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background: var(--color-surface-elevated);
+    border: 2px solid transparent;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.theme-option:hover {
+    background: #F0F0F0;
+}
+
+.theme-option.selected {
+    border-color: var(--color-primary);
+    background: rgba(124, 77, 255, 0.1);
+}
+
+.theme-option-icon {
+    font-size: 2rem;
+}
+
+.theme-option-label {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+}
+
+/* === Song Selector Modal === */
+.song-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--space-3);
+}
+
+.song-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-4);
+    background: var(--color-surface-elevated);
+    border: 2px solid transparent;
+    border-radius: var(--radius-xl);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    text-align: center;
+}
+
+.song-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary-light);
+}
+
+.song-card.selected {
+    border-color: var(--color-primary);
+    background: rgba(124, 77, 255, 0.1);
+}
+
+.song-card-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-2);
+}
+
+.song-card-title {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+}
+
+/* === Parental Lock === */
+.parental-lock-hint {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background: rgba(255, 193, 7, 0.15);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-4);
+}
+
+.parental-lock-hint-icon {
+    font-size: var(--font-size-xl);
+}
+
+.parental-lock-hint-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+/* Settings button progress indicator (SVG circle) */
+.settings-btn {
+    position: relative;
+}
+
+.settings-btn .progress-ring {
+    position: absolute;
+    inset: -2px;
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    pointer-events: none;
+    transform: rotate(-90deg);
+    /* Start from top */
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.settings-btn .progress-ring-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.2);
+    stroke-width: 3;
+}
+
+.settings-btn .progress-ring-fill {
+    fill: none;
+    stroke: var(--color-accent, #FFD54F);
+    stroke-width: 3;
+    stroke-linecap: round;
+    /* Circumference = 2 * PI * 20 = ~125.66 */
+    stroke-dasharray: 125.66;
+    stroke-dashoffset: 125.66;
+    /* Start with no stroke visible */
+}
+
+.settings-btn.holding .progress-ring {
+    opacity: 1;
+}
+
+.settings-btn.holding .progress-ring-fill {
+    animation: fill-ring 3s linear forwards;
+}
+
+@keyframes fill-ring {
+    to {
+        stroke-dashoffset: 0;
+        /* Full circle visible */
+    }
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+    .modal {
+        max-width: 100%;
+        max-height: 85vh;
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        margin-top: auto;
+    }
+
+    .modal-backdrop {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .song-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .theme-selector {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .song-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-2);
+    }
+
+    .song-card {
+        padding: var(--space-3);
+    }
+
+    .song-card-icon {
+        font-size: 2rem;
+    }
+}
