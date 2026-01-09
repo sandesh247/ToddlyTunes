@@ -400,18 +400,55 @@ class PianoKeyboard {
     }
 
     /**
-     * Center keyboard on specific notes/octaves
+     * Center keyboard on specific notes/octaves with smooth scrolling animation
+     * Does NOT re-render - just scrolls to center the requested octave range
+     * @param {number} minOctave - Minimum octave of the range to center
+     * @param {number} maxOctave - Maximum octave of the range to center
+     * @param {boolean} animate - Whether to animate the scroll (default: true)
      */
-    centerOn(minOctave, maxOctave) {
-        // Re-render with new octave range
-        this.render(minOctave, maxOctave);
-
-        // Scroll to center if needed
+    centerOn(minOctave, maxOctave, animate = true) {
         const container = this.container;
-        if (container.scrollWidth > container.clientWidth) {
+
+        // Calculate the center octave
+        const centerOctave = (minOctave + maxOctave) / 2;
+
+        // Find a key near the center octave to scroll to
+        // Use D as it's roughly in the middle of an octave's white keys
+        const centerNote = `D${Math.round(centerOctave)}`;
+        const centerKey = this.keys.get(centerNote);
+
+        if (!centerKey) {
+            // Fallback: just scroll to general center
             const scrollLeft = (container.scrollWidth - container.clientWidth) / 2;
-            container.scrollLeft = scrollLeft;
+            container.scrollTo({
+                left: scrollLeft,
+                behavior: animate ? 'smooth' : 'instant'
+            });
+            return;
         }
+
+        // Calculate scroll position to center the key
+        const keyRect = centerKey.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+
+        // Current left position of the key relative to the container's scroll
+        const keyLeftInContainer = keyRect.left - containerRect.left + container.scrollLeft;
+
+        // Calculate scroll position to center the key
+        const scrollLeft = keyLeftInContainer - (containerRect.width / 2) + (keyRect.width / 2);
+
+        container.scrollTo({
+            left: Math.max(0, scrollLeft),
+            behavior: animate ? 'smooth' : 'instant'
+        });
+    }
+
+    /**
+     * Scroll to center the keyboard (middle C area) without animation
+     * Used for initial positioning
+     */
+    scrollToCenter() {
+        this.centerOn(3, 5, false);
     }
 }
 

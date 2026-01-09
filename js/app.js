@@ -63,8 +63,12 @@ async function initApp() {
     document.addEventListener('click', () => audioEngine.init(), { once: true });
     document.addEventListener('touchstart', () => audioEngine.init(), { once: true });
 
-    // Render initial piano (default octave range)
-    gameController.piano.render(3, 5);
+    // Render full piano range (octaves 1-7) for infinite feel
+    // Then center on middle C area after layout completes
+    gameController.piano.render(1, 7);
+    requestAnimationFrame(() => {
+        gameController.piano.scrollToCenter();
+    });
 
     // Check for last played song
     const lastSongId = settings.get('lastSongId');

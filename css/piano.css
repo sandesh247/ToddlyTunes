@@ -5,15 +5,16 @@
 /* === Piano Container === */
 .piano-container {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: flex-start;
     width: 100%;
-    max-width: var(--max-content-width);
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     padding: var(--space-2);
     scrollbar-width: none;
+    /* Allow smooth scrolling animation for song transitions */
+    scroll-behavior: smooth;
 }
 
 .piano-container::-webkit-scrollbar {
