@@ -34,7 +34,8 @@ body {
 .app {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100dvh;
+    /* Dynamic viewport height - accounts for mobile browser UI */
     width: 100vw;
     overflow: hidden;
     position: relative;
@@ -398,5 +399,19 @@ body {
 
     .piano-section {
         padding: var(--space-2);
+    }
+}
+
+/* Tall narrow phones (like Pixel 7 Pro) - ensure piano is always fully visible */
+@media (max-width: 480px) and (min-height: 700px) {
+    .music-book-section {
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .piano-section {
+        flex-shrink: 0;
+        padding-bottom: env(safe-area-inset-bottom, var(--space-2));
     }
 }

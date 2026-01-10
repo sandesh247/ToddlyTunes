@@ -197,9 +197,9 @@
 @media (max-width: 480px) {
   :root {
     --white-key-width: 38px;
-    --white-key-height: 110px;
+    --white-key-height: 95px;
     --black-key-width: 24px;
-    --black-key-height: 68px;
+    --black-key-height: 58px;
     --header-height: 44px;
     --font-size-xl: 1.25rem;
     --font-size-lg: 1.1rem;
