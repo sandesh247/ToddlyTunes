@@ -73,15 +73,6 @@ class Settings {
     }
 
     /**
-     * Reset to defaults
-     */
-    reset() {
-        this.settings = { ...defaults };
-        this.save();
-        this.notifyListeners('*', this.settings, null);
-    }
-
-    /**
      * Add a change listener
      */
     onChange(callback) {

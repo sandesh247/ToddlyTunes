@@ -214,30 +214,6 @@ class GameController {
             titleEl.textContent = 'Select a Song';
         }
     }
-
-    /**
-     * Pause the game
-     */
-    pause() {
-        this.isPlaying = false;
-    }
-
-    /**
-     * Resume the game
-     */
-    resume() {
-        if (this.currentSong && !this.isComplete) {
-            this.isPlaying = true;
-        }
-    }
-
-    /**
-     * Get current progress (0-1)
-     */
-    getProgress() {
-        if (!this.currentSong) return 0;
-        return this.musicBook.currentIndex / (this.currentSong.sequence.length - 1);
-    }
 }
 
 // Singleton instance

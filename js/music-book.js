@@ -80,6 +80,18 @@ class MusicBook {
     }
 
     /**
+     * Convert duration value to CSS class suffix
+     * @param {number} duration - Note duration (0.5, 1, 2, 4)
+     * @returns {string} CSS class suffix
+     */
+    getDurationClass(duration) {
+        if (duration <= 0.5) return 'eighth';
+        if (duration <= 1) return 'quarter';
+        if (duration <= 2) return 'half';
+        return 'whole';
+    }
+
+    /**
      * Render the sheet music display
      */
     render() {
@@ -105,6 +117,11 @@ class MusicBook {
                 const pair = document.createElement('div');
                 pair.className = 'note-lyric-pair';
                 pair.dataset.index = item.index;
+
+                // Apply duration class for rhythm visualization
+                // Duration: 0.5 = eighth, 1 = quarter (default), 2 = half, 4 = whole
+                const duration = item.duration || 1;
+                pair.classList.add(`duration-${this.getDurationClass(duration)}`);
 
                 // Note indicator
                 const noteEl = document.createElement('span');

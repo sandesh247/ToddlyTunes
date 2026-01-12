@@ -80,6 +80,8 @@
     flex-wrap: wrap;
     gap: var(--space-1);
     justify-content: center;
+    align-items: flex-end;
+    /* Bottom-align notes so lyrics stay consistent */
     min-height: var(--font-size-2xl);
 }
 
@@ -89,6 +91,8 @@
     flex-wrap: wrap;
     gap: var(--space-1);
     justify-content: center;
+    align-items: baseline;
+    /* Ensure lyrics align on text baseline */
     font-family: var(--font-family-display);
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-medium);
@@ -100,12 +104,81 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-end;
+    /* Align contents to bottom for consistent baseline */
     gap: var(--space-1);
     transition: transform 0.15s ease;
 }
 
 .note-lyric-pair.current {
     transform: scale(1.1);
+    transform-origin: bottom center;
+    /* Scale from bottom to maintain lyric baseline alignment */
+}
+
+/* === Duration/Rhythm Indicators === */
+/* Visualize note duration through width variation */
+
+.note-lyric-pair.duration-eighth {
+    /* Quick notes - compact */
+    min-width: 2rem;
+}
+
+.note-lyric-pair.duration-eighth .note-indicator {
+    min-width: 1.5rem;
+    padding: var(--space-1);
+    font-size: var(--font-size-lg);
+}
+
+.note-lyric-pair.duration-quarter {
+    /* Standard notes - default width */
+    min-width: 2.5rem;
+}
+
+.note-lyric-pair.duration-half {
+    /* Held notes - wider with visual indicator */
+    min-width: 3.5rem;
+}
+
+.note-lyric-pair.duration-half .note-indicator {
+    min-width: 3rem;
+    position: relative;
+}
+
+/* Hold indicator line for half notes */
+.note-lyric-pair.duration-half .note-indicator::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 25%;
+    right: 25%;
+    height: 3px;
+    background: currentColor;
+    border-radius: 2px;
+    opacity: 0.5;
+}
+
+.note-lyric-pair.duration-whole {
+    /* Long held notes - widest with prominent indicator */
+    min-width: 4.5rem;
+}
+
+.note-lyric-pair.duration-whole .note-indicator {
+    min-width: 4rem;
+    position: relative;
+}
+
+/* Double hold indicator for whole notes */
+.note-lyric-pair.duration-whole .note-indicator::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 15%;
+    right: 15%;
+    height: 4px;
+    background: currentColor;
+    border-radius: 2px;
+    opacity: 0.6;
 }
 
 /* Note Indicator */
