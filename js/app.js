@@ -104,6 +104,55 @@ async function initApp() {
         songSelector.open();
     });
 
+    // Intro start button - opens song selector
+    const introStartBtn = document.getElementById('introStartBtn');
+    if (introStartBtn) {
+        introStartBtn.addEventListener('click', () => {
+            audioEngine.init();
+            songSelector.open();
+        });
+    }
+
+    // Logo click - return to intro screen
+    const appLogo = document.querySelector('.app-logo');
+    if (appLogo) {
+        appLogo.style.cursor = 'pointer';
+        appLogo.addEventListener('click', () => {
+            // Stop current game
+            gameController.stop();
+            // Hide demo button
+            const demoBtn = document.getElementById('demoBtn');
+            if (demoBtn) demoBtn.hidden = true;
+            // Restore intro content
+            const sheetContent = document.getElementById('sheetMusicContent');
+            if (sheetContent) {
+                sheetContent.innerHTML = `
+                    <div class="intro-content" id="introContent">
+                        <div class="intro-emoji">🎹✨🎵</div>
+                        <h3 class="intro-title">Welcome to ToddlyTunes!</h3>
+                        <p class="intro-text">Learn to play fun songs on the piano!</p>
+                        <ul class="intro-features">
+                            <li>🎵 Tap the music note to pick a song</li>
+                            <li>🎧 Press demo to hear how it sounds</li>
+                            <li>🎹 Follow the glowing keys to play along</li>
+                            <li>⚙️ Hold settings for sound themes!</li>
+                        </ul>
+                        <button class="intro-start-btn" id="introStartBtn">
+                            🎵 Choose a Song! 🎵
+                        </button>
+                    </div>`;
+                // Re-attach event listener to new button
+                const newIntroBtn = document.getElementById('introStartBtn');
+                if (newIntroBtn) {
+                    newIntroBtn.addEventListener('click', () => {
+                        audioEngine.init();
+                        songSelector.open();
+                    });
+                }
+            }
+        });
+    }
+
     // Initialize audio on first interaction
     document.addEventListener('click', () => audioEngine.init(), { once: true });
     document.addEventListener('touchstart', () => audioEngine.init(), { once: true });
