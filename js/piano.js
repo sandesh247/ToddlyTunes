@@ -5,6 +5,7 @@
 
 import { settings } from './settings.js';
 import { audioEngine } from './audio.js';
+import { spawnParticles } from './particles.js';
 
 // Standard white keys in an octave
 const WHITE_KEYS = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
@@ -407,6 +408,11 @@ class PianoKeyboard {
 
         const className = isCorrect ? 'correct' : 'incorrect';
         key.classList.add(className);
+
+        // Spawn celebratory particles on correct key press
+        if (isCorrect) {
+            spawnParticles(key, noteStr, ['star', 'sparkle']);
+        }
 
         setTimeout(() => {
             key.classList.remove(className);

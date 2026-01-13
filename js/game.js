@@ -8,6 +8,7 @@ import { audioEngine } from './audio.js';
 import { PianoKeyboard } from './piano.js';
 import { MusicBook } from './music-book.js';
 import { getSongById, getSongOctaveRange, getSongRangeCenter } from '../data/songs.js';
+import { spawnCelebration } from './particles.js';
 
 class GameController {
     constructor() {
@@ -163,7 +164,10 @@ class GameController {
         this.piano.clearHighlights();
 
         // Brief delay before celebration to let the final note ring
-        setTimeout(() => audioEngine.playCelebration(), 500);
+        setTimeout(() => {
+            spawnCelebration();
+            audioEngine.playCelebration();
+        }, 500);
 
         // Show completion in music book
         this.musicBook.showCompletion();
