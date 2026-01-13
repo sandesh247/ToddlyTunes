@@ -48,13 +48,12 @@ export const songs = [
       { note: "E4", lyric: "lit", duration: 1 },
       { note: "E4", lyric: "tle", duration: 1 },
       { note: "E4", lyric: "lamb,", duration: 1 },
-      { note: "E4", lyric: "", duration: 1 },
       // Line 4: Whose fleece was white as snow
-      { note: "D4", lyric: "whose", duration: 1 },
+      { note: "E4", lyric: "Whose", duration: 1 },
       { note: "D4", lyric: "fleece", duration: 1 },
-      { note: "E4", lyric: "was", duration: 1 },
-      { note: "D4", lyric: "white", duration: 1 },
-      { note: "C4", lyric: "as", duration: 1 },
+      { note: "D4", lyric: "was", duration: 1 },
+      { note: "E4", lyric: "white", duration: 1 },
+      { note: "D4", lyric: "as", duration: 1 },
       { note: "C4", lyric: "snow.", duration: 2 }
     ]
   },
