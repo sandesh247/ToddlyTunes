@@ -49,7 +49,17 @@ class AudioEngine {
             // Create master gain
             this.masterGain = this.audioContext.createGain();
             this.masterGain.gain.value = 0.5;
+
+            // Create reverb effect for cathedral-like space
+            this.reverbNode = this.createReverb();
+            this.reverbGain = this.audioContext.createGain();
+            this.reverbGain.gain.value = 0; // Off by default
+            this.reverbNode.connect(this.reverbGain);
+            this.reverbGain.connect(this.audioContext.destination);
+
+            // Master goes to both destination and reverb
             this.masterGain.connect(this.audioContext.destination);
+            this.masterGain.connect(this.reverbNode);
 
             // Resume context if suspended
             if (this.audioContext.state === 'suspended') {
@@ -61,6 +71,29 @@ class AudioEngine {
         } catch (e) {
             console.error('Failed to initialize audio:', e);
         }
+    }
+
+    /**
+     * Create a simple reverb using convolver with generated impulse response
+     */
+    createReverb() {
+        const convolver = this.audioContext.createConvolver();
+        const sampleRate = this.audioContext.sampleRate;
+        const duration = 3.0; // 3 second reverb tail for cathedral feel
+        const decay = 2.5;
+        const length = sampleRate * duration;
+        const impulse = this.audioContext.createBuffer(2, length, sampleRate);
+
+        for (let channel = 0; channel < 2; channel++) {
+            const channelData = impulse.getChannelData(channel);
+            for (let i = 0; i < length; i++) {
+                // Exponential decay with some random variation
+                channelData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+            }
+        }
+
+        convolver.buffer = impulse;
+        return convolver;
     }
 
     /**
@@ -77,17 +110,6 @@ class AudioEngine {
                 release: 0.5,
                 filterFreq: 4000,
                 filterQ: 1
-            },
-            reverb: {
-                type: 'custom',
-                harmonics: [1, 0.4, 0.2, 0.1],
-                attack: 0.05,
-                decay: 0.5,
-                sustain: 0.6,
-                release: 1.5,
-                filterFreq: 3000,
-                filterQ: 0.5,
-                reverbMix: 0.4
             },
             xylophone: {
                 type: 'custom',
@@ -108,6 +130,17 @@ class AudioEngine {
                 release: 0.8,
                 filterFreq: 6000,
                 filterQ: 3
+            },
+            organ: {
+                type: 'custom',
+                // Rich odd harmonics (1st, 3rd, 5th, 7th, 9th) for pipe organ sound
+                harmonics: [1, 0.1, 0.6, 0.1, 0.4, 0.05, 0.3, 0.05, 0.2],
+                attack: 0.02,     // Quick but not instant attack
+                decay: 0.05,      // Very short decay
+                sustain: 0.95,    // Nearly full sustain - key held = sound continues
+                release: 0.15,    // Quick release when key lifted
+                filterFreq: 5000,
+                filterQ: 0.8
             }
         };
 
@@ -246,6 +279,12 @@ class AudioEngine {
      */
     playNoteInternal(noteStr, frequency, volumeMultiplier = 1.0) {
         const config = this.getThemeConfig();
+
+        // Update reverb level based on global setting
+        if (this.reverbGain) {
+            this.reverbGain.gain.value = settings.get('reverbMix') || 0;
+        }
+
         const { oscillators, gains } = this.createOscillators(frequency, config.harmonics);
 
         // Create envelope gain

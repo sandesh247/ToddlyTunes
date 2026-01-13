@@ -11,6 +11,7 @@ const defaults = {
     showNoteLabels: true,
     soundTheme: 'piano',
     harmonyMode: 'none',  // 'none', 'octave', 'power', 'major'
+    reverbMix: 0,         // 0 = dry, 1 = full reverb (cathedral)
     fullSongDemo: false,
     lastSongId: null
 };
@@ -196,6 +197,20 @@ export function initSettingsUI() {
             harmonyButtons.forEach(btn => btn.classList.remove('selected'));
             button.classList.add('selected');
             settings.set('harmonyMode', button.dataset.harmony);
+        });
+    }
+
+    // Reverb mix slider
+    const reverbSlider = document.getElementById('reverbMix');
+    const reverbValue = document.getElementById('reverbValue');
+    if (reverbSlider && reverbValue) {
+        const currentReverb = Math.round(settings.get('reverbMix') * 100);
+        reverbSlider.value = currentReverb;
+        reverbValue.textContent = `${currentReverb}%`;
+        reverbSlider.addEventListener('input', () => {
+            const value = parseInt(reverbSlider.value, 10);
+            reverbValue.textContent = `${value}%`;
+            settings.set('reverbMix', value / 100);
         });
     }
 }
