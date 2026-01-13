@@ -177,56 +177,76 @@ class PianoKeyboard {
      * Find the key at a given screen point
      * Implements "fat finger" algorithm with tolerance
      */
+    /**
+     * Find the key at a given screen point
+     * Implements "fat finger" algorithm with tolerance
+     */
     findKeyAtPoint(x, y) {
         const tolerance = settings.get('touchTolerance');
-        const elements = document.elementsFromPoint(x, y);
 
-        // First check if directly on a key
-        let directKey = null;
+        // 1. Check for direct hit or near-miss on expected key
+        const directKey = this.findDirectKey(x, y);
+        if (tolerance === 0 || directKey) {
+            return this.checkExpectedKeyPriority(directKey, x, tolerance) || directKey;
+        }
+
+        // 2. If no direct hit, find nearest key within tolerance
+        return this.findNearestKey(x, y, tolerance);
+    }
+
+    /**
+     * Find key directly under the point
+     */
+    findDirectKey(x, y) {
+        const elements = document.elementsFromPoint(x, y);
         for (const el of elements) {
             if (el.classList.contains('piano-key')) {
-                directKey = el;
-                break;
+                return el;
             }
         }
+        return null;
+    }
 
-        // If no tolerance or directly on a key, return it
-        if (tolerance === 0 || directKey) {
-            // But if we have an expected next note and tolerance is on,
-            // prefer the expected note if it's close enough
-            if (tolerance > 0 && this.nextExpectedNote && directKey) {
-                const expectedKey = this.keys.get(this.nextExpectedNote);
-                if (expectedKey && expectedKey !== directKey) {
-                    const directRect = directKey.getBoundingClientRect();
-                    const expectedRect = expectedKey.getBoundingClientRect();
+    /**
+     * Check if we should prioritize the expected key over the direct key
+     * (e.g. if touch is on the edge and expected key is adjacent)
+     */
+    checkExpectedKeyPriority(directKey, x, tolerance) {
+        if (tolerance <= 0 || !this.nextExpectedNote || !directKey) return null;
 
-                    // Check if expected key is reasonably close
-                    const distance = Math.abs(expectedRect.left - directRect.left);
-                    const maxDistance = directRect.width * (1 + tolerance);
+        const expectedKey = this.keys.get(this.nextExpectedNote);
+        if (!expectedKey || expectedKey === directKey) return null;
 
-                    if (distance < maxDistance) {
-                        // Check if touch is near the border between keys
-                        const directCenter = directRect.left + directRect.width / 2;
-                        const touchDistance = Math.abs(x - directCenter);
-                        const borderThreshold = directRect.width * (0.5 - tolerance * 0.3);
+        const directRect = directKey.getBoundingClientRect();
+        const expectedRect = expectedKey.getBoundingClientRect();
 
-                        if (touchDistance > borderThreshold) {
-                            return expectedKey;
-                        }
-                    }
-                }
+        // Check if expected key is reasonably close
+        const distance = Math.abs(expectedRect.left - directRect.left);
+        const maxDistance = directRect.width * (1 + tolerance);
+
+        if (distance < maxDistance) {
+            // Check if touch is near the border between keys
+            const directCenter = directRect.left + directRect.width / 2;
+            const touchDistance = Math.abs(x - directCenter);
+            const borderThreshold = directRect.width * (0.5 - tolerance * 0.3);
+
+            if (touchDistance > borderThreshold) {
+                return expectedKey;
             }
-            return directKey;
         }
+        return null;
+    }
 
-        // With tolerance, find nearest key
+    /**
+     * Find nearest key within tolerance radius
+     */
+    findNearestKey(x, y, tolerance) {
         let nearestKey = null;
         let nearestDistance = Infinity;
 
         for (const [noteStr, key] of this.keys) {
             const rect = key.getBoundingClientRect();
             const padding = rect.width * tolerance;
-
             const expandedRect = {
                 left: rect.left - padding,
                 right: rect.right + padding,
@@ -236,6 +256,7 @@ class PianoKeyboard {
 
             if (x >= expandedRect.left && x <= expandedRect.right &&
                 y >= expandedRect.top && y <= expandedRect.bottom) {
+
                 const centerX = rect.left + rect.width / 2;
                 const centerY = rect.top + rect.height / 2;
                 const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
@@ -250,7 +271,6 @@ class PianoKeyboard {
                 }
             }
         }
-
         return nearestKey;
     }
 

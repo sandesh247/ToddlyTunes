@@ -214,6 +214,49 @@ class GameController {
             titleEl.textContent = 'Select a Song';
         }
     }
+
+    /**
+     * Play a demo of the first few notes
+     * @param {number} maxNotes - Maximum notes to play (default 6)
+     * @param {function} onComplete - Called when demo finishes
+     * @returns {function} Cancel function
+     */
+    playDemo(maxNotes = 6, onComplete = null) {
+        if (!this.currentSong) return () => { };
+
+        // Pause normal gameplay during demo
+        this.isPlaying = false;
+
+        // Reset to beginning
+        this.musicBook.reset();
+
+        // Play demo with visual feedback
+        const cancel = audioEngine.playDemo(
+            this.currentSong.sequence,
+            this.currentSong.bpm || 100,
+            maxNotes,
+            (noteStr, index) => {
+                // Highlight current note on piano
+                this.piano.setHighlights([noteStr]);
+                // Advance music book to show current note
+                if (index > 0) {
+                    this.musicBook.advance();
+                }
+                this.musicBook.updateHighlights();
+            },
+            () => {
+                // Demo complete - reset to beginning and restore highlights
+                this.isPlaying = true;  // Must be set BEFORE updateHighlights
+                this.musicBook.reset();
+                this.updateHighlights();  // Now this will work correctly
+                if (onComplete) {
+                    onComplete();
+                }
+            }
+        );
+
+        return cancel;
+    }
 }
 
 // Singleton instance

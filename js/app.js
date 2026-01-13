@@ -6,9 +6,7 @@ import {
     settings,
     initSettingsUI,
     setupParentalLock,
-    initModals,
-    openModal,
-    closeModal
+    initModals
 } from './settings.js';
 import { audioEngine } from './audio.js';
 import { gameController } from './game.js';
@@ -16,6 +14,23 @@ import { SongSelector } from './song-selector.js';
 
 // DOM Elements
 let songSelector;
+
+/**
+ * Show a toast notification
+ * @param {string} toastId - ID of the toast element
+ * @param {number} duration - Duration to show in ms (default 2500)
+ */
+function showToast(toastId, duration = 2500) {
+    const toast = document.getElementById(toastId);
+    if (toast) {
+        toast.hidden = false;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+            toast.hidden = true;
+        }, duration);
+    }
+}
 
 /**
  * Initialize the application
@@ -52,7 +67,37 @@ async function initApp() {
         audioEngine.init();
         // Load the selected song
         gameController.loadSong(songId);
+        // Show demo button
+        const demoBtn = document.getElementById('demoBtn');
+        if (demoBtn) {
+            demoBtn.hidden = false;
+        }
     };
+
+    // Demo button functionality
+    const demoBtn = document.getElementById('demoBtn');
+    let cancelDemo = null;
+    if (demoBtn) {
+        demoBtn.addEventListener('click', () => {
+            // Cancel any running demo
+            if (cancelDemo) {
+                cancelDemo();
+                cancelDemo = null;
+                demoBtn.classList.remove('playing');
+                return;
+            }
+
+            // Start demo - use full song or Infinity notes based on settings
+            demoBtn.classList.add('playing');
+            const maxNotes = settings.get('fullSongDemo') ? Infinity : 6;
+            cancelDemo = gameController.playDemo(maxNotes, () => {
+                // Demo complete
+                demoBtn.classList.remove('playing');
+                cancelDemo = null;
+                showToast('demoToast');
+            });
+        });
+    }
 
     // Song select button
     songSelectBtn.addEventListener('click', () => {

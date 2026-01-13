@@ -293,6 +293,71 @@ class AudioEngine {
             }, i * 150);
         });
     }
+
+    /**
+     * Play a demo of a song sequence (first N notes)
+     * @param {Array} sequence - Song sequence array [{note, duration}, ...]
+     * @param {number} bpm - Beats per minute
+     * @param {number} maxNotes - Maximum notes to play (default 6)
+     * @param {function} onNotePlay - Callback when note starts (noteStr, index)
+     * @param {function} onComplete - Callback when demo finishes
+     * @returns {function} Cancel function
+     */
+    playDemo(sequence, bpm = 100, maxNotes = 6, onNotePlay = null, onComplete = null) {
+        if (!this.initialized) {
+            this.init();
+        }
+
+        // Get first N notes, skipping rests
+        const notesToPlay = sequence
+            .slice(0, maxNotes)
+            .filter(item => item.note !== 'rest');
+
+        let currentIndex = 0;
+        let cancelled = false;
+        let timeoutId = null;
+
+        const playNextNote = () => {
+            if (cancelled || currentIndex >= notesToPlay.length) {
+                if (!cancelled && onComplete) {
+                    onComplete();
+                }
+                return;
+            }
+
+            const item = notesToPlay[currentIndex];
+            const duration = item.duration || 1;
+            const noteDurationMs = (duration * 60000) / bpm;
+
+            // Callback for UI sync
+            if (onNotePlay) {
+                onNotePlay(item.note, currentIndex);
+            }
+
+            // Play the note
+            const stop = this.playNote(item.note);
+
+            // Stop and schedule next note
+            timeoutId = setTimeout(() => {
+                stop();
+                currentIndex++;
+                // Small gap between notes
+                timeoutId = setTimeout(playNextNote, 50);
+            }, noteDurationMs);
+        };
+
+        // Start playing
+        playNextNote();
+
+        // Return cancel function
+        return () => {
+            cancelled = true;
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+            this.stopAll();
+        };
+    }
 }
 
 // Singleton instance

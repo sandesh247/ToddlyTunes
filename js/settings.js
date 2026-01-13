@@ -11,6 +11,7 @@ const defaults = {
     touchTolerance: 0.3,
     showNoteLabels: true,
     soundTheme: 'piano',
+    fullSongDemo: false,
     lastSongId: null
 };
 
@@ -160,6 +161,15 @@ export function initSettingsUI() {
             themeButtons.forEach(btn => btn.classList.remove('selected'));
             button.classList.add('selected');
             settings.set('soundTheme', button.dataset.theme);
+        });
+    }
+
+    // Full song demo toggle
+    const fullSongToggle = document.getElementById('fullSongDemo');
+    if (fullSongToggle) {
+        fullSongToggle.checked = settings.get('fullSongDemo');
+        fullSongToggle.addEventListener('change', () => {
+            settings.set('fullSongDemo', fullSongToggle.checked);
         });
     }
 }

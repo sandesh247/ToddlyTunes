@@ -20,6 +20,10 @@ class MusicBook {
         this.currentSong = null;
         this.currentIndex = 0;
         this.lines = []; // Grouped note-lyric pairs by line
+
+        // Cache DOM elements for performance
+        this.cachedPairs = []; // Array of { pairEl, noteEl, index, lineIndex }
+        this.cachedLines = []; // Array of lineEls
     }
 
     /**
@@ -98,11 +102,14 @@ class MusicBook {
         if (!this.contentEl || !this.lines.length) return;
 
         this.contentEl.innerHTML = '';
+        this.cachedPairs = [];
+        this.cachedLines = [];
 
         this.lines.forEach((line, lineIndex) => {
             const lineEl = document.createElement('div');
             lineEl.className = 'music-line';
             lineEl.dataset.lineIndex = lineIndex;
+            this.cachedLines[lineIndex] = lineEl;
 
             // Notes row
             const notesRow = document.createElement('div');
@@ -145,6 +152,14 @@ class MusicBook {
                 pair.appendChild(noteEl);
                 pair.appendChild(lyricEl);
                 notesRow.appendChild(pair);
+
+                // Cache elements
+                this.cachedPairs[item.index] = {
+                    pairEl: pair,
+                    noteEl: noteEl,
+                    index: item.index,
+                    lineIndex: lineIndex
+                };
             });
 
             lineEl.appendChild(notesRow);
@@ -158,35 +173,52 @@ class MusicBook {
     /**
      * Update highlights based on current position
      */
+    /**
+     * Update highlights based on current position
+     * Optimized to use cached elements instead of querySelectorAll
+     */
     updateHighlights() {
         if (!this.contentEl || !this.currentSong) return;
 
         const lookahead = settings.get('lookaheadSteps');
-        const pairs = this.contentEl.querySelectorAll('.note-lyric-pair');
-        const lines = this.contentEl.querySelectorAll('.music-line');
 
         // Clear all highlights
-        pairs.forEach(pair => {
-            pair.classList.remove('current', 'past');
-            const noteEl = pair.querySelector('.note-indicator');
-            if (noteEl) {
-                noteEl.classList.remove('highlight-current', 'highlight-next-1', 'highlight-next-2');
+        this.cachedPairs.forEach(cache => {
+            cache.pairEl.classList.remove('current', 'past');
+            cache.noteEl.classList.remove('highlight-current', 'highlight-next-1', 'highlight-next-2');
+        });
+
+        // Apply highlights based on current index
+        let currentLineIndex = -1;
+
+        this.cachedPairs.forEach(cache => {
+            const { index, pairEl, noteEl, lineIndex } = cache;
+
+            if (index < this.currentIndex) {
+                pairEl.classList.add('past');
+            } else if (index === this.currentIndex) {
+                pairEl.classList.add('current');
+                noteEl.classList.add('highlight-current');
+                currentLineIndex = lineIndex;
+            } else if (index <= this.currentIndex + lookahead) {
+                const offset = index - this.currentIndex;
+                if (offset === 1) noteEl.classList.add('highlight-next-1');
+                else noteEl.classList.add('highlight-next-2');
             }
         });
 
         // Update line states
-        let currentLineIndex = -1;
-        lines.forEach((line, idx) => {
-            const linePairs = line.querySelectorAll('.note-lyric-pair');
-            const indices = Array.from(linePairs).map(p => parseInt(p.dataset.index));
-            const minIdx = Math.min(...indices);
-            const maxIdx = Math.max(...indices);
-
-            if (this.currentIndex >= minIdx && this.currentIndex <= maxIdx) {
-                currentLineIndex = idx;
+        this.cachedLines.forEach((line, idx) => {
+            if (idx === currentLineIndex) {
                 line.classList.remove('past', 'future');
                 line.classList.add('current');
-            } else if (this.currentIndex > maxIdx) {
+
+                // Scroll current line into view
+                line.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            } else if (idx < currentLineIndex) {
                 line.classList.remove('current', 'future');
                 line.classList.add('past');
             } else {
@@ -194,33 +226,6 @@ class MusicBook {
                 line.classList.add('future');
             }
         });
-
-        // Apply highlights
-        pairs.forEach(pair => {
-            const index = parseInt(pair.dataset.index);
-            const noteEl = pair.querySelector('.note-indicator');
-
-            if (index < this.currentIndex) {
-                pair.classList.add('past');
-            } else if (index === this.currentIndex) {
-                pair.classList.add('current');
-                if (noteEl) noteEl.classList.add('highlight-current');
-            } else if (index <= this.currentIndex + lookahead) {
-                const offset = index - this.currentIndex;
-                if (noteEl) {
-                    if (offset === 1) noteEl.classList.add('highlight-next-1');
-                    else noteEl.classList.add('highlight-next-2');
-                }
-            }
-        });
-
-        // Scroll current line into view
-        if (currentLineIndex >= 0 && lines[currentLineIndex]) {
-            lines[currentLineIndex].scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
-            });
-        }
     }
 
     /**

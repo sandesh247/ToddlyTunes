@@ -34,7 +34,12 @@
         <span class="app-logo-text">ToddlyTunes</span>
       </div>
 
-      <h1 class="song-title" id="songTitle">Select a Song</h1>
+      <div class="song-header">
+        <h1 class="song-title" id="songTitle">Select a Song</h1>
+        <button class="demo-btn" id="demoBtn" title="Listen to demo" aria-label="Play demo" hidden>
+          🎧
+        </button>
+      </div>
 
       <div class="header-actions">
         <button class="icon-btn" id="songSelectBtn" title="Choose Song" aria-label="Choose Song">
@@ -147,6 +152,20 @@
             </div>
           </div>
 
+          <!-- Full Song Demo (hidden advanced feature) -->
+          <div class="settings-group">
+            <div class="toggle-container">
+              <div>
+                <label class="settings-label">Full Song Demo</label>
+                <p class="settings-description">Demo plays the entire song instead of 6 notes</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="fullSongDemo">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
           <!-- Sound Theme -->
           <div class="settings-group">
             <label class="settings-label">Sound Theme</label>
@@ -173,6 +192,13 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Demo Feedback Toast -->
+  <div class="demo-toast" id="demoToast" hidden>
+    <span class="demo-toast-emoji">🎯</span>
+    <span class="demo-toast-text">Your turn!</span>
+    <span class="demo-toast-emoji">🎯</span>
   </div>
 
   <!-- JavaScript Modules -->
