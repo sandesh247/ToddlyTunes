@@ -5,12 +5,12 @@
 
 const STORAGE_KEY = 'toddlytunes-settings';
 
-// Default settings
 const defaults = {
     lookaheadSteps: 3,
     touchTolerance: 0.3,
     showNoteLabels: true,
     soundTheme: 'piano',
+    harmonyMode: 'none',  // 'none', 'octave', 'power', 'major'
     fullSongDemo: false,
     lastSongId: null
 };
@@ -170,6 +170,32 @@ export function initSettingsUI() {
         fullSongToggle.checked = settings.get('fullSongDemo');
         fullSongToggle.addEventListener('change', () => {
             settings.set('fullSongDemo', fullSongToggle.checked);
+        });
+    }
+
+    // Harmony mode selector
+    const harmonySelector = document.getElementById('harmonySelector');
+    if (harmonySelector) {
+        const currentHarmony = settings.get('harmonyMode');
+        const harmonyButtons = harmonySelector.querySelectorAll('.theme-option');
+
+        // Set initial selection
+        harmonyButtons.forEach(btn => {
+            if (btn.dataset.harmony === currentHarmony) {
+                btn.classList.add('selected');
+            } else {
+                btn.classList.remove('selected');
+            }
+        });
+
+        // Handle clicks
+        harmonySelector.addEventListener('click', (e) => {
+            const button = e.target.closest('.theme-option');
+            if (!button) return;
+
+            harmonyButtons.forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+            settings.set('harmonyMode', button.dataset.harmony);
         });
     }
 }

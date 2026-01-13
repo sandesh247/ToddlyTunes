@@ -153,7 +153,50 @@ class AudioEngine {
     }
 
     /**
-     * Play a note
+     * Get harmony notes based on current harmony mode setting
+     * @param {string} noteStr - Root note like "C4"
+     * @returns {Array} Array of {noteStr, volume} for harmony notes
+     */
+    getHarmonyNotes(noteStr) {
+        const harmonyMode = settings.get('harmonyMode');
+        if (harmonyMode === 'none') return [];
+
+        const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const match = noteStr.match(/^([A-G]#?)(\d+)$/);
+        if (!match) return [];
+
+        const [, noteName, octaveStr] = match;
+        const octave = parseInt(octaveStr);
+        const noteIndex = notes.indexOf(noteName);
+
+        const getNote = (semitones) => {
+            let newIndex = noteIndex + semitones;
+            let newOctave = octave;
+            while (newIndex >= 12) { newIndex -= 12; newOctave++; }
+            while (newIndex < 0) { newIndex += 12; newOctave--; }
+            return `${notes[newIndex]}${newOctave}`;
+        };
+
+        switch (harmonyMode) {
+            case 'octave':
+                // Root + octave above
+                return [{ noteStr: getNote(12), volume: 0.4 }];
+            case 'power':
+                // Root + perfect 5th (7 semitones)
+                return [{ noteStr: getNote(7), volume: 0.35 }];
+            case 'major':
+                // Root + major 3rd (4 semitones) + perfect 5th (7 semitones)
+                return [
+                    { noteStr: getNote(4), volume: 0.3 },
+                    { noteStr: getNote(7), volume: 0.3 }
+                ];
+            default:
+                return [];
+        }
+    }
+
+    /**
+     * Play a note (plus harmony notes based on settings)
      * @param {string} noteStr - Note string like "C4", "D#5"
      * @returns {function} Stop function
      */
@@ -172,6 +215,36 @@ class AudioEngine {
         // Stop any existing instance of this note
         this.stopNote(noteStr);
 
+        // Play the root note
+        this.playNoteInternal(noteStr, frequency, 1.0);
+
+        // Play harmony notes at reduced volume and store their keys for cleanup
+        const harmonyNotes = this.getHarmonyNotes(noteStr);
+        const harmonyKeys = [];
+        harmonyNotes.forEach(({ noteStr: harmonyNote, volume }) => {
+            const harmonyFreq = this.noteFrequencies[harmonyNote];
+            if (harmonyFreq) {
+                // Use a unique key for harmony notes to avoid conflicts
+                const harmonyKey = `${noteStr}_harmony_${harmonyNote}`;
+                this.playNoteInternal(harmonyKey, harmonyFreq, volume);
+                harmonyKeys.push(harmonyKey);
+            }
+        });
+
+        // Store harmony keys with the root note for cleanup
+        const rootNote = this.activeNotes.get(noteStr);
+        if (rootNote) {
+            rootNote.harmonyKeys = harmonyKeys;
+        }
+
+        // Return stop function
+        return () => this.stopNote(noteStr);
+    }
+
+    /**
+     * Internal method to play a single note at a given volume
+     */
+    playNoteInternal(noteStr, frequency, volumeMultiplier = 1.0) {
         const config = this.getThemeConfig();
         const { oscillators, gains } = this.createOscillators(frequency, config.harmonics);
 
@@ -184,8 +257,14 @@ class AudioEngine {
         filter.frequency.value = config.filterFreq;
         filter.Q.value = config.filterQ;
 
+        // Apply volume multiplier to envelope
+        const scaledConfig = { ...config };
+
         // Connect: oscillators -> gains -> filter -> envelope -> master
-        gains.forEach(gain => gain.connect(filter));
+        gains.forEach(gain => {
+            gain.gain.value *= volumeMultiplier;
+            gain.connect(filter);
+        });
         filter.connect(envelopeGain);
         envelopeGain.connect(this.masterGain);
 
@@ -203,19 +282,16 @@ class AudioEngine {
             filter,
             config
         });
-
-        // Return stop function
-        return () => this.stopNote(noteStr);
     }
 
     /**
-     * Stop a specific note
+     * Stop a specific note (and its harmony notes)
      */
     stopNote(noteStr) {
         const note = this.activeNotes.get(noteStr);
         if (!note) return;
 
-        const { oscillators, envelopeGain, config } = note;
+        const { oscillators, envelopeGain, config, harmonyKeys } = note;
         const now = this.audioContext.currentTime;
 
         // Apply release envelope
@@ -236,6 +312,13 @@ class AudioEngine {
         }, config.release * 1000);
 
         this.activeNotes.delete(noteStr);
+
+        // Also stop any harmony notes
+        if (harmonyKeys && harmonyKeys.length > 0) {
+            harmonyKeys.forEach(harmonyKey => {
+                this.stopNote(harmonyKey);
+            });
+        }
     }
 
     /**
